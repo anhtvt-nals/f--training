@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "QTsznhv2hsc=",
+  "success": true,
+  "projectFilePath": "/workspaces/f--training/day-2/day-2.fsproj",
+  "expectedPackageFiles": [
+    "/home/codespace/.nuget/packages/fsharp.core/11.0.100/fsharp.core.11.0.100.nupkg.sha512"
+  ],
+  "logs": []
+}
