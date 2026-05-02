@@ -1,0 +1,7 @@
+argent 1
+argent 2
+argent 3
+argent 4
+argent 5
+argent 6
+argent 7
