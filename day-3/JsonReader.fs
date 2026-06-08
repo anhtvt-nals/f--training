@@ -5,6 +5,9 @@ open System.IO
 open System.Text.Json
 open System.Text.Json.Serialization
 
+let options = JsonSerializerOptions()
+options.PropertyNameCaseInsensitive <- true
+
 let loadJson path =
     try
         File.ReadAllText(path)
@@ -20,8 +23,6 @@ type User = {
 }
 
 let parseUser (json: string) : Result<User list,string> = 
-    let options = JsonSerializerOptions()
-    options.PropertyNameCaseInsensitive <- true
     try
         let data = JsonSerializer.Deserialize<User list> (json, options)
         Ok data
