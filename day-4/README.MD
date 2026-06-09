@@ -24,6 +24,18 @@ Bài tập trong thư mục `day-4` xây dựng một module quản lý người
     - xoá người dùng
 
 ## Unit test đã làm
+- Tạo unit-test
+```
+dotnet new xunit -lang F# -n Users.Tests
+```
+
+- Thêm package vào project
+```
+dotnet add package xunit
+dotnet add package xunit.runner.visualstudio
+dotnet add package Microsoft.NET.Test.Sdk
+```
+
 - `Users.Tests/UsersTests.fs`
   - Tạo `fakeRepo` để test tách biệt với file thực tế bằng cách dùng bộ nhớ trong.
   - Các nhóm test:
