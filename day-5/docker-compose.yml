@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  cosmosdb-emulator:
+    container_name: azure-cosmosdb-emulator
+    image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview
+    platform: linux/amd64
+    restart: unless-stopped
+    tty: true
+    mem_limit: 3g
+    cpu_count: 2
+    environment:
+      - PROTOCOL=https
+      - AZURE_COSMOS_EMULATOR_PARTITION_COUNT=2
+      - AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE=false
+      - AZURE_COSMOS_EMULATOR_IP_ADDRESS_OVERRIDE=${COSMOS_IP:-0.0.0.0}
+    ports:
+      - "8081:8081"
+      - "8900:8900"
+      - "8901:8901"
+      - "8979:8979"
+      - "10250:10250"
+      - "10251:10251"
+      - "10252:10252"
+      - "10253:10253"
+      - "10254:10254"
+      - "10255:10255"
+    volumes:
+      - cosmosdb_data:/tmp/cosmos/appdata
+      - cosmosdb_certs:/tmp/cosmos/certs
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-k",
+          "-f",
+          "--max-time", "10",        # ← thêm timeout cho curl
+          "https://localhost:8081/_explorer/emulator.pem"
+        ]
+      interval: 30s
+      timeout: 15s      # ← tăng từ 10s lên 15s
+      retries: 20       # ← tăng từ 10 lên 20
+      start_period: 240s  # ← tăng từ 60s lên 240s (4 phút)
+
+volumes:
+  cosmosdb_data:
+    driver: local
+  cosmosdb_certs:
+    driver: local
+
+networks:
+  default:
+    name: cosmosdb-network
