@@ -17,7 +17,7 @@ open Types
 let createBook (container: Container) (book: Book) =
     task {
         try
-            let! response = container.CreateItemAsync(book, new PartitionKey(book.category))
+            let! response = container.CreateItemAsync(book, new PartitionKey(book.itemType))
             match response.StatusCode with
             | HttpStatusCode.Created -> printfn "   ✓ Book '%s' được tạo thành công." book.title
             | (code: HttpStatusCode)                   -> printfn "   ? StatusCode: %A" code
@@ -34,15 +34,15 @@ let createBook (container: Container) (book: Book) =
 
 let allBooks (container: Container) =
     task {
-        let query = "SELECT * FROM books"
+        let query = "SELECT * FROM books WHERE books.itemType = 'book' AND books.isDeleted = false"
         let! results = queryCosmosAsyncSeq<Book> container query
         return results
     }
 
-let getBookById (container: Container) (id: string) (category: string) =
+let getBookById (container: Container) (id: string) =
     task {
         try
-            let! response = container.ReadItemAsync<Book>(id, new PartitionKey(category))
+            let! response = container.ReadItemAsync<Book>(id, new PartitionKey("book"))
             return Some response.Resource
         with
         | :? CosmosException as ex when ex.StatusCode = HttpStatusCode.NotFound ->
@@ -54,17 +54,23 @@ let getBookById (container: Container) (id: string) (category: string) =
 
 let updateBook (container: Container) (book: Book) =
     task {
-        let! response = container.ReplaceItemAsync(book, book.id, new PartitionKey(book.category))
+        let! response = container.ReplaceItemAsync(book, book.id, new PartitionKey(book.itemType))
         match response.StatusCode with
         | HttpStatusCode.OK -> printfn "   ✓ Book '%s' updated successfully." book.title
         | code              -> printfn "   ? StatusCode: %A" code
         return response.Resource
     }
 
-let deleteBook (container: Container) (id: string) (category: string) =
+let createOrUpdate (container: Container) (book: Book) =
+    task {
+        let! response = container.UpsertItemAsync(book, PartitionKey(book.itemType))
+        return response.Resource
+    }
+
+let deleteBook (container: Container) (id: string) =
     task {
         try
-            let! response = container.DeleteItemAsync<Book>(id, new PartitionKey(category))
+            let! response = container.DeleteItemAsync<Book>(id, new PartitionKey("book"))
             match response.StatusCode with
             | HttpStatusCode.NoContent -> printfn "   ✓ Book with id '%s' deleted successfully." id
             | code                     -> printfn "   ? StatusCode: %A" code
@@ -79,20 +85,19 @@ let deleteBook (container: Container) (id: string) (category: string) =
 
 let handleBookChanges
     (bookContainer: Container)
-    (categoryContainer: Container)
     (changes: IReadOnlyCollection<Book>) =
     task {
 
         for book in changes do
             if book.isDeleted then
-                printfn "Book changed: %s (%s)" book.title book.category
+                printfn "Book changed: %s (%s)" book.title book.itemType
 
-                let! result = updateCategoryCount categoryContainer bookContainer book.category
+                let! result = updateCategoryCount bookContainer book.category
                 match result with
                 | Some updatedCategory ->
                     printfn "   ✓ Updated category '%s' bookCount to %d" updatedCategory.name updatedCategory.bookCount
                 | None ->
-                    printfn "   ? Failed to update category '%s' bookCount" book.category
+                    printfn "   ? Failed to update category '%s' bookCount" book.itemType
 
         return ()
     }

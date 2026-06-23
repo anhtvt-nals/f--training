@@ -9,27 +9,38 @@ open Types
 
 let allCategories (container: Container) =
     task {
-        let query = "SELECT * FROM categories"
+        let query = "SELECT * FROM books WHERE books.itemType = 'category'"
         let! results = queryCosmosAsyncSeq<Category> container query
         return results
     }
 
 let updateCategory (container: Container) (category: Category) =
     task {
-        let! response =   container.ReplaceItemAsync(category, category.id, PartitionKey(category.id))
+        let! response =   container.ReplaceItemAsync(category, category.id, PartitionKey(category.itemType))
         match response.StatusCode with
         | HttpStatusCode.OK -> printfn "   ✓ Category '%s' updated successfully." category.name
         | (code: HttpStatusCode)              -> printfn "   ? StatusCode: %A" code
         return response.Resource
     }
 
-let increaseBookCount (container: Container) (categoryId: string) (delta: int) =
+let createOrUpdate (container: Container) (category: Category) =
+    task {
+        try
+            let! response = container.UpsertItemAsync(category, PartitionKey(category.itemType))
+            return response.Resource
+        with
+        | :? CosmosException as ex ->
+            printfn "Error upserting category: %s" ex.Message
+            return category
+    }
+
+let increaseBookCount (container: Container) (categoryId: string, partitionKey: string) (delta: int) =
     task {
         let! response = container.PatchItemAsync<Category>(
             categoryId,
-            PartitionKey(categoryId),
+            PartitionKey(partitionKey),
             [
-                PatchOperation.Increment("/bookCount", int64 1)
+                PatchOperation.Increment("/bookCount", int64 delta)
             ]
         )
         match response.StatusCode with
@@ -41,7 +52,7 @@ let increaseBookCount (container: Container) (categoryId: string) (delta: int) =
 let deleteCategory (container: Container) (id: string) =
     task {
         try
-            let! response = container.DeleteItemAsync<Category>(id, new PartitionKey(id))
+            let! response = container.DeleteItemAsync<Category>(id, new PartitionKey("category"))
             match response.StatusCode with
             | HttpStatusCode.NoContent -> printfn "   ✓ Category with id '%s' deleted successfully." id
             | (code: HttpStatusCode)                     -> printfn "   ? StatusCode: %A" code
@@ -58,7 +69,7 @@ let deleteCategory (container: Container) (id: string) =
 let getCategoryById (container: Container) (id: string) =
     task {
         try
-            let! response = container.ReadItemAsync<Category>(id, new PartitionKey(id))
+            let! response = container.ReadItemAsync<Category>(id, new PartitionKey("category"))
             return Some response.Resource
         with
         | :? CosmosException as ex when ex.StatusCode = HttpStatusCode.NotFound ->
@@ -70,7 +81,7 @@ let getCategoryById (container: Container) (id: string) =
 let createCategory (container: Container) (category: Category) =
     task {
         try
-            let! response = container.CreateItemAsync(category, new PartitionKey(category.id))
+            let! response = container.CreateItemAsync(category, new PartitionKey(category.itemType))
             match response.StatusCode with
             | HttpStatusCode.Created -> printfn "   ✓ Category '%s' được tạo thành công." category.name
             | (code: HttpStatusCode)                   -> printfn "   ? StatusCode: %A" code
@@ -84,17 +95,17 @@ let createCategory (container: Container) (category: Category) =
             return category
     }
 
-let updateCategoryCount (categoryContainer: Container) (bookContainer: Container) (categoryId: string) =
+let updateCategoryCount (bookContainer: Container) (categoryId: string) =
     task {
-        let! categoryOpt = getCategoryById categoryContainer categoryId
+        let! categoryOpt = getCategoryById bookContainer (categoryId)
         match categoryOpt with
         | Some category ->
             try
-                let! booksInCategory = queryCosmosAsyncSeq<Book> bookContainer (sprintf "SELECT * FROM books b WHERE b.category = '%s' and b.isDeleted = false" categoryId)
+                let! booksInCategory = queryCosmosAsyncSeq<Book> bookContainer (sprintf "SELECT * FROM books books WHERE books.category = '%s' and books.isDeleted = false and books.itemType = 'book'" categoryId)
                 let newCount = List.length booksInCategory
-                let! response = categoryContainer.PatchItemAsync<Category>(
+                let! response = bookContainer.PatchItemAsync<Category>(
                     categoryId,
-                    PartitionKey(categoryId),
+                    PartitionKey(category.itemType),
                     [
                         PatchOperation.Replace("/bookCount", int64 newCount)
                     ]

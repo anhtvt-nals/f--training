@@ -9,11 +9,10 @@ open System.Collections.Generic
 
 let createBookChangeFeedProcessor 
     (bookContainer: Container) 
-    (categoryContainer: Container) 
     (leaseContainer: Container) =
     let handler = 
         Container.ChangesHandler<Book>(fun changes cancellationToken ->
-            handleBookChanges bookContainer categoryContainer changes
+            handleBookChanges bookContainer changes
         )
     bookContainer
         .GetChangeFeedProcessorBuilder<Book>("book-change-feed-processor", handler)

@@ -13,14 +13,7 @@ open FSharp.Control
 // isEmulator = false → dùng cho Azure production
 let createClient (cfg: CosmosConfig) (isEmulator: bool) =
     let opts = CosmosClientOptions()
-    opts.ConnectionMode <- ConnectionMode.Gateway
-    if isEmulator then
-        opts.HttpClientFactory <- fun () ->
-            let handler = new SocketsHttpHandler()
-            handler.SslOptions.RemoteCertificateValidationCallback <-
-                fun _ _ _ _ -> true
-            new HttpClient(handler)
-    new CosmosClient(cfg.EndpointUrl, cfg.PrimaryKey, opts) // CosmosClient constructor: (endpointUri, primaryKey, options)
+    new CosmosClient(cfg.EndpointUrl, cfg.PrimaryKey, opts)
 
 // ── Tạo Database ──────────────────────────────────────────────────────────
 
@@ -38,31 +31,16 @@ let createDatabase (client: CosmosClient) (cfg: CosmosConfig) =
     }
 
 // ── Tạo Container: books ──────────────────────────────────────────────────
-// Partition Key : /category
+// Partition Key : /itemType
 // Throughput    : 400 RU/s (minimum — scale up sau khi có load thực)
 let createBooksContainer (db: Database) (cfg: CosmosConfig) =
     task {
-        printfn "Tạo container '%s' (Partition Key: /category)..." cfg.BooksId
-        let props = ContainerProperties(cfg.BooksId, "/category") // ContainerProperties constructor: (id, partitionKeyPath)
+        printfn "Tạo container '%s' (Partition Key: /itemType)..." cfg.BooksId
+        let props = ContainerProperties(cfg.BooksId, "/itemType") // ContainerProperties constructor: (id, partitionKeyPath)
         let! response = db.CreateContainerIfNotExistsAsync(props, throughput = 400)
         match response.StatusCode with
         | HttpStatusCode.OK      -> printfn "   ✓ Container 'books' đã tồn tại, dùng lại."
         | HttpStatusCode.Created -> printfn "   ✓ Container 'books' mới được tạo thành công."
-        | code                   -> printfn "   ? StatusCode: %A" code
-        return response.Container
-    }
-
-// ── Tạo Container: categories ─────────────────────────────────────────────
-// Partition Key : /id  (slug = id, point read = 1 RU)
-// Throughput    : 400 RU/s (shared minimum)
-let createCategoriesContainer (db: Database) (cfg: CosmosConfig) =
-    task {
-        printfn "Tạo container '%s' (Partition Key: /id)..." cfg.CategoriesId
-        let props = ContainerProperties(cfg.CategoriesId, "/id")
-        let! response = db.CreateContainerIfNotExistsAsync(props, throughput = 400)
-        match response.StatusCode with
-        | HttpStatusCode.OK      -> printfn "   ✓ Container 'categories' đã tồn tại, dùng lại."
-        | HttpStatusCode.Created -> printfn "   ✓ Container 'categories' mới được tạo thành công."
         | code                   -> printfn "   ? StatusCode: %A" code
         return response.Container
     }
@@ -83,7 +61,6 @@ let createLeaseContainer (db: Database) (cfg: CosmosConfig) =
 
 type LibraryContainers = {
     Books      : Container
-    Categories : Container
     Leases     : Container
 }
 
@@ -95,12 +72,11 @@ let initLibraryDatabase (client: CosmosClient) (cfg: CosmosConfig) (isEmulator: 
 
         let! db         = createDatabase           client cfg
         let! books      = createBooksContainer      db     cfg
-        let! categories = createCategoriesContainer db     cfg
         let! leases = createLeaseContainer db cfg
 
         printfn "LibraryDatabase sẵn sàng."
 
-        return { Books = books; Categories = categories; Leases = leases }
+        return { Books = books; Leases = leases }
     }
 
 let queryCosmosAsyncSeq<'T> (container: Container) (query: string) =
