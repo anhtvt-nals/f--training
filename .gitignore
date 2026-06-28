@@ -1,2 +1,8 @@
 bin
 obj
+
+# Local config files with secrets
+**/Config.local.fs
+**/*.local.fs
+.env
+.env.local

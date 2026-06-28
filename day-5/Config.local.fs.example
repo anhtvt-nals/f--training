@@ -1,0 +1,47 @@
+module Config
+
+// ── Cosmos DB config ──────────────────────────────────────────────────────
+
+type CosmosConfig = {
+    EndpointUrl  : string
+    PrimaryKey   : string
+    DatabaseId   : string
+    BooksId      : string
+    LeasesId     : string
+}
+
+let azureConfig = {
+    EndpointUrl  = "https://your-cosmos-account.documents.azure.com:443/"
+    PrimaryKey   = "your-cosmos-primary-key-here"
+    DatabaseId   = "LibraryDatabase"
+    BooksId      = "books"
+    LeasesId     = "leases"
+}
+
+// ── Azure Search config ───────────────────────────────────────────────────
+
+type AzureSearchConfig = {
+    EndpointUrl   : string
+    AdminKey      : string
+    ReadKey       : string
+    BookIndex     : string
+    CategoryIndex : string
+}
+
+let azureSearchConfig = {
+    EndpointUrl   = "https://your-search-service.search.windows.net"
+    AdminKey      = "your-admin-key-here"
+    ReadKey       = "your-read-key-here"
+    BookIndex     = "book-index"
+    CategoryIndex = "category-index"
+}
+
+// ────────────────────────────────────────────────────────────────────────
+// HOW TO USE:
+// 1. Copy this file to Config.local.fs
+// 2. Replace placeholder values with your actual credentials
+// 3. In your .fsx scripts, load Config.local.fs instead of Config.fs:
+//    #load "Config.local.fs"
+// 
+// NOTE: Config.local.fs is gitignored and will NOT be committed
+// ────────────────────────────────────────────────────────────────────────

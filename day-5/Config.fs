@@ -11,9 +11,25 @@ type CosmosConfig = {
 }
 
 let azureConfig = {
-    EndpointUrl  = "AZURE_COSMOSDB_ENDPOINT_URL"
-    PrimaryKey   = "AZURE_COSMOSDB_PRIMARY_KEY"
+    EndpointUrl  = "ENDPOINT_URL"  // Fixed: windows.net
+    PrimaryKey   = "PRIMARY_KEY"  // Fixed: windows.net
     DatabaseId   = "LibraryDatabase"
     BooksId      = "books"
     LeasesId     = "leases"
+}
+
+type AzureSearchConfig = {
+    EndpointUrl   : string
+    AdminKey      : string
+    ReadKey       : string
+    BookIndex     : string
+    CategoryIndex : string
+}
+
+let azureSearchConfig = {
+    EndpointUrl   = "ENDPOINT_URL"  // Fixed: windows.net
+    AdminKey      = "ADMIN_KEY"  // Fixed: windows.net
+    ReadKey       = "READ_KEY"  // Fixed: windows.net
+    BookIndex     = "book-index"
+    CategoryIndex = "category-index"
 }

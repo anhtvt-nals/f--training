@@ -13,10 +13,14 @@
     <Compile Include="Category.fs" />
     <Compile Include="Book.fs" />
     <Compile Include="ChangeFeed.fs" />
+    <Compile Include="SearchIndexClient.fs" />
+    <Compile Include="SearchIndexClient.fs" />
+    <Compile Include="SearchClient.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Search.Documents" Version="11.5.1" />
     <PackageReference Include="FSharp.Control.AsyncSeq" Version="4.15.0" />
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.61.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
