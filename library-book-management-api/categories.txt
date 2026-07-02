@@ -1,0 +1,30 @@
+cat_001|Fiction|Literary works based on imaginative narrative
+cat_002|Non-Fiction|Informative works based on facts and real events
+cat_003|Science Fiction|Speculative fiction exploring futuristic science and technology
+cat_004|Fantasy|Imaginative fiction involving magical and supernatural elements
+cat_005|Mystery|Fiction centered around solving a crime or puzzle
+cat_006|Romance|Love stories and emotional relationships
+cat_007|Thriller|Suspenseful fiction with tension and excitement
+cat_008|Horror|Fiction designed to frighten and unsettle
+cat_009|Biography|Detailed accounts of a person's life
+cat_010|History|Scholarly works about past events
+cat_011|Science|Books exploring natural and physical sciences
+cat_012|Technology|Works about engineering, computing and innovation
+cat_013|Philosophy|Works exploring fundamental questions of existence
+cat_014|Psychology|Study of mind, behavior and mental processes
+cat_015|Self-Help|Books focused on personal improvement
+cat_016|Business|Works about commerce, management and entrepreneurship
+cat_017|Economics|Study of production, consumption and wealth
+cat_018|Politics|Works about governance and political systems
+cat_019|Art|Books about visual arts and creative expression
+cat_020|Music|Works about musical theory, history and practice
+cat_021|Poetry|Literary works using aesthetic and rhythmic language
+cat_022|Drama|Plays and theatrical works
+cat_023|Comics|Graphic novels and sequential art
+cat_024|Children|Books written for young readers
+cat_025|Young Adult|Literature targeting teenage readers
+cat_026|Education|Works about teaching and learning methodologies
+cat_027|Health|Books about wellness, medicine and nutrition
+cat_028|Travel|Literature about journeys and exploration
+cat_029|Cooking|Recipe books and culinary guides
+cat_030|Religion|Works about faith, spirituality and theology

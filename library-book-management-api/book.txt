@@ -1,0 +1,200 @@
+book_001|The Great Gatsby|F. Scott Fitzgerald|cat_001|Fiction|1925|5
+book_002|To Kill a Mockingbird|Harper Lee|cat_001|Fiction|1960|8
+book_003|1984|George Orwell|cat_001|Fiction|1949|10
+book_004|Pride and Prejudice|Jane Austen|cat_001|Fiction|1813|6
+book_005|The Catcher in the Rye|J.D. Salinger|cat_001|Fiction|1951|7
+book_006|Brave New World|Aldous Huxley|cat_001|Fiction|1932|5
+book_007|The Lord of the Rings|J.R.R. Tolkien|cat_004|Fantasy|1954|9
+book_008|Harry Potter and the Sorcerer's Stone|J.K. Rowling|cat_004|Fantasy|1997|12
+book_009|A Game of Thrones|George R.R. Martin|cat_004|Fantasy|1996|8
+book_010|The Name of the Wind|Patrick Rothfuss|cat_004|Fantasy|2007|5
+book_011|Mistborn: The Final Empire|Brandon Sanderson|cat_004|Fantasy|2006|7
+book_012|The Hobbit|J.R.R. Tolkien|cat_004|Fantasy|1937|10
+book_013|Dune|Frank Herbert|cat_003|Science Fiction|1965|8
+book_014|Neuromancer|William Gibson|cat_003|Science Fiction|1984|5
+book_015|Ender's Game|Orson Scott Card|cat_003|Science Fiction|1985|7
+book_016|Foundation|Isaac Asimov|cat_003|Science Fiction|1951|6
+book_017|The Martian|Andy Weir|cat_003|Science Fiction|2014|9
+book_018|Snow Crash|Neal Stephenson|cat_003|Science Fiction|1992|4
+book_019|The Left Hand of Darkness|Ursula K. Le Guin|cat_003|Science Fiction|1969|3
+book_020|Hyperion|Dan Simmons|cat_003|Science Fiction|1989|5
+book_021|The Da Vinci Code|Dan Brown|cat_005|Mystery|2003|11
+book_022|The Girl with the Dragon Tattoo|Stieg Larsson|cat_005|Mystery|2005|8
+book_023|And Then There Were None|Agatha Christie|cat_005|Mystery|1939|9
+book_024|The Hound of the Baskervilles|Arthur Conan Doyle|cat_005|Mystery|1902|6
+book_025|Gone Girl|Gillian Flynn|cat_005|Mystery|2012|7
+book_026|The Big Sleep|Raymond Chandler|cat_005|Mystery|1939|4
+book_027|The Silent Patient|Alex Michaelides|cat_005|Mystery|2019|10
+book_028|In the Woods|Tana French|cat_005|Mystery|2007|5
+book_029|The Shining|Stephen King|cat_008|Horror|1977|8
+book_030|It|Stephen King|cat_008|Horror|1986|7
+book_031|Dracula|Bram Stoker|cat_008|Horror|1897|6
+book_032|Frankenstein|Mary Shelley|cat_008|Horror|1818|5
+book_033|The Haunting of Hill House|Shirley Jackson|cat_008|Horror|1959|4
+book_034|Mexican Gothic|Silvia Moreno-Garcia|cat_008|Horror|2020|6
+book_035|Bird Box|Josh Malerman|cat_008|Horror|2014|5
+book_036|The Silence of the Lambs|Thomas Harris|cat_007|Thriller|1988|7
+book_037|The Girl on the Train|Paula Hawkins|cat_007|Thriller|2015|9
+book_038|Shutter Island|Dennis Lehane|cat_007|Thriller|2003|5
+book_039|The Bourne Identity|Robert Ludlum|cat_007|Thriller|1980|6
+book_040|The Day of the Jackal|Frederick Forsyth|cat_007|Thriller|1971|4
+book_041|The Firm|John Grisham|cat_007|Thriller|1991|8
+book_042|Killing Floor|Lee Child|cat_007|Thriller|1997|7
+book_043|Before I Go to Sleep|S.J. Watson|cat_007|Thriller|2011|5
+book_044|Outlander|Diana Gabaldon|cat_006|Romance|1991|8
+book_045|The Notebook|Nicholas Sparks|cat_006|Romance|1996|10
+book_046|Jane Eyre|Charlotte Bronte|cat_006|Romance|1847|7
+book_047|Wuthering Heights|Emily Bronte|cat_006|Romance|1847|6
+book_048|Me Before You|Jojo Moyes|cat_006|Romance|2012|9
+book_049|The Fault in Our Stars|John Green|cat_006|Romance|2012|8
+book_050|A Walk to Remember|Nicholas Sparks|cat_006|Romance|1999|7
+book_051|Brida|Paulo Coelho|cat_006|Romance|1990|4
+book_052|Steve Jobs|Walter Isaacson|cat_009|Biography|2011|9
+book_053|Becoming|Michelle Obama|cat_009|Biography|2018|12
+book_054|Leonardo da Vinci|Walter Isaacson|cat_009|Biography|2017|6
+book_055|The Diary of a Young Girl|Anne Frank|cat_009|Biography|1947|10
+book_056|Long Walk to Freedom|Nelson Mandela|cat_009|Biography|1994|7
+book_057|Educated|Tara Westover|cat_009|Biography|2018|8
+book_058|Einstein: His Life and Universe|Walter Isaacson|cat_009|Biography|2007|5
+book_059|Sapiens: A Brief History of Humankind|Yuval Noah Harari|cat_010|History|2014|12
+book_060|A People's History of the United States|Howard Zinn|cat_010|History|1980|7
+book_061|Guns, Germs, and Steel|Jared Diamond|cat_010|History|1997|9
+book_062|The Silk Roads: A New History of the World|Peter Frankopan|cat_010|History|2015|6
+book_063|SPQR: A History of Ancient Rome|Mary Beard|cat_010|History|2015|7
+book_064|The Dawn of Everything|David Graeber|cat_010|History|2021|5
+book_065|1776|David McCullough|cat_010|History|2005|6
+book_066|A Brief History of Time|Stephen Hawking|cat_011|Science|1988|10
+book_067|The Selfish Gene|Richard Dawkins|cat_011|Science|1976|7
+book_068|Cosmos|Carl Sagan|cat_011|Science|1980|9
+book_069|The Origin of Species|Charles Darwin|cat_011|Science|1859|5
+book_070|The Gene: An Intimate History|Siddhartha Mukherjee|cat_011|Science|2016|6
+book_071|Astrophysics for People in a Hurry|Neil deGrasse Tyson|cat_011|Science|2017|8
+book_072|The Immortal Life of Henrietta Lacks|Rebecca Skloot|cat_011|Science|2010|7
+book_073|Silent Spring|Rachel Carson|cat_011|Science|1962|5
+book_074|The Pragmatic Programmer|Andrew Hunt|cat_012|Technology|1999|8
+book_075|Clean Code|Robert C. Martin|cat_012|Technology|2008|10
+book_076|Designing Data-Intensive Applications|Martin Kleppmann|cat_012|Technology|2017|7
+book_077|Introduction to Algorithms|Thomas H. Cormen|cat_012|Technology|1990|5
+book_078|The Art of Computer Programming|Donald Knuth|cat_012|Technology|1968|4
+book_079|Structure and Interpretation of Computer Programs|Harold Abelson|cat_012|Technology|1985|6
+book_080|Code: The Hidden Language of Computer Hardware and Software|Charles Petzold|cat_012|Technology|1999|5
+book_081|The Mythical Man-Month|Frederick Brooks|cat_012|Technology|1975|4
+book_082|Meditations|Marcus Aurelius|cat_013|Philosophy|180|8
+book_083|Thus Spoke Zarathustra|Friedrich Nietzsche|cat_013|Philosophy|1883|5
+book_084|The Republic|Plato|cat_013|Philosophy|-375|7
+book_085|Beyond Good and Evil|Friedrich Nietzsche|cat_013|Philosophy|1886|5
+book_086|The Stranger|Albert Camus|cat_013|Philosophy|1942|6
+book_087|Being and Time|Martin Heidegger|cat_013|Philosophy|1927|4
+book_088|Thinking, Fast and Slow|Daniel Kahneman|cat_014|Psychology|2011|10
+book_089|Man's Search for Meaning|Viktor Frankl|cat_014|Psychology|1946|8
+book_090|The Power of Habit|Charles Duhigg|cat_014|Psychology|2012|9
+book_091|Influence: The Psychology of Persuasion|Robert Cialdini|cat_014|Psychology|1984|7
+book_092|Emotional Intelligence|Daniel Goleman|cat_014|Psychology|1995|8
+book_093|The Interpretation of Dreams|Sigmund Freud|cat_014|Psychology|1899|4
+book_094|Atomic Habits|James Clear|cat_015|Self-Help|2018|14
+book_095|The 7 Habits of Highly Effective People|Stephen Covey|cat_015|Self-Help|1989|11
+book_096|How to Win Friends and Influence People|Dale Carnegie|cat_015|Self-Help|1936|10
+book_097|The Subtle Art of Not Giving a F*ck|Mark Manson|cat_015|Self-Help|2016|12
+book_098|Mindset: The New Psychology of Success|Carol S. Dweck|cat_015|Self-Help|2006|8
+book_099|You Are a Badass|Jen Sincero|cat_015|Self-Help|2013|7
+book_100|Good to Great|Jim Collins|cat_016|Business|2001|9
+book_101|The Lean Startup|Eric Ries|cat_016|Business|2011|10
+book_102|Zero to One|Peter Thiel|cat_016|Business|2014|7
+book_103|The Innovator's Dilemma|Clayton Christensen|cat_016|Business|1997|6
+book_104|Built to Last|Jim Collins|cat_016|Business|1994|7
+book_105|Start with Why|Simon Sinek|cat_016|Business|2009|8
+book_106|The Hard Thing About Hard Things|Ben Horowitz|cat_016|Business|2014|5
+book_107|Freakonomics|Steven Levitt|cat_017|Economics|2005|9
+book_108|The Wealth of Nations|Adam Smith|cat_017|Economics|1776|4
+book_109|Capital in the Twenty-First Century|Thomas Piketty|cat_017|Economics|2013|6
+book_110|Nudge|Richard Thaler|cat_017|Economics|2008|7
+book_111|Predictably Irrational|Dan Ariely|cat_017|Economics|2008|6
+book_112|The Road to Serfdom|Friedrich Hayek|cat_017|Economics|1944|4
+book_113|The Prince|Niccolo Machiavelli|cat_018|Politics|1532|7
+book_114|The Social Contract|Jean-Jacques Rousseau|cat_018|Politics|1762|5
+book_115|On Liberty|John Stuart Mill|cat_018|Politics|1859|6
+book_116|The Communist Manifesto|Karl Marx|cat_018|Politics|1848|8
+book_117|The Art of War|Sun Tzu|cat_018|Politics|-500|9
+book_118|The Clash of Civilizations|Samuel Huntington|cat_018|Politics|1996|5
+book_119|Ways of Seeing|John Berger|cat_019|Art|1972|5
+book_120|The Story of Art|E.H. Gombrich|cat_019|Art|1950|8
+book_121|Art and Fear|David Bayles|cat_019|Art|1994|4
+book_122|The Letters of Vincent van Gogh|Vincent van Gogh|cat_019|Art|1914|6
+book_123|Wabi-Sabi: Japanese Wisdom for a Perfectly Imperfect Life|Beth Kempton|cat_019|Art|2018|4
+book_124|Musicophilia: Tales of Music and the Brain|Oliver Sacks|cat_020|Music|2007|6
+book_125|How Music Works|David Byrne|cat_020|Music|2012|5
+book_126|The Rest Is Noise|Alex Ross|cat_020|Music|2007|4
+book_127|This Is Your Brain on Music|Daniel Levitin|cat_020|Music|2006|7
+book_128|Miles: The Autobiography|Miles Davis|cat_020|Music|1989|4
+book_129|The Waste Land and Other Poems|T.S. Eliot|cat_021|Poetry|1922|5
+book_130|Leaves of Grass|Walt Whitman|cat_021|Poetry|1855|6
+book_131|The Collected Poems of Robert Frost|Robert Frost|cat_021|Poetry|1930|7
+book_132|Milk and Honey|Rupi Kaur|cat_021|Poetry|2014|9
+book_133|The Sun and Her Flowers|Rupi Kaur|cat_021|Poetry|2017|8
+book_134|The Complete Poems of Emily Dickinson|Emily Dickinson|cat_021|Poetry|1890|5
+book_135|Hamlet|William Shakespeare|cat_022|Drama|1601|8
+book_136|A Streetcar Named Desire|Tennessee Williams|cat_022|Drama|1947|6
+book_137|Death of a Salesman|Arthur Miller|cat_022|Drama|1949|7
+book_138|The Importance of Being Earnest|Oscar Wilde|cat_022|Drama|1895|6
+book_139|Long Day's Journey Into Night|Eugene O'Neill|cat_022|Drama|1956|4
+book_140|Watchmen|Alan Moore|cat_023|Comics|1986|9
+book_141|Maus|Art Spiegelman|cat_023|Comics|1986|7
+book_142|Persepolis|Marjane Satrapi|cat_023|Comics|2000|6
+book_143|The Dark Knight Returns|Frank Miller|cat_023|Comics|1986|5
+book_144|Saga|Brian K. Vaughan|cat_023|Comics|2012|8
+book_145|The Little Prince|Antoine de Saint-Exupery|cat_024|Children|1943|10
+book_146|Charlotte's Web|E.B. White|cat_024|Children|1952|8
+book_147|Where the Wild Things Are|Maurice Sendak|cat_024|Children|1963|7
+book_148|The Very Hungry Caterpillar|Eric Carle|cat_024|Children|1969|12
+book_149|Winnie-the-Pooh|A.A. Milne|cat_024|Children|1926|9
+book_150|Matilda|Roald Dahl|cat_024|Children|1988|8
+book_151|The Hunger Games|Suzanne Collins|cat_025|Young Adult|2008|12
+book_152|The Fault in Our Stars|John Green|cat_025|Young Adult|2012|10
+book_153|Twilight|Stephenie Meyer|cat_025|Young Adult|2005|9
+book_154|The Book Thief|Markus Zusak|cat_025|Young Adult|2005|8
+book_155|Divergent|Veronica Roth|cat_025|Young Adult|2011|7
+book_156|The Maze Runner|James Dashner|cat_025|Young Adult|2009|6
+book_157|Pedagogy of the Oppressed|Paulo Freire|cat_026|Education|1968|6
+book_158|The Elements of Style|William Strunk|cat_026|Education|1918|8
+book_159|How Children Succeed|Paul Tough|cat_026|Education|2012|5
+book_160|The Courage to Teach|Parker J. Palmer|cat_026|Education|1997|4
+book_161|Why Don't Students Like School|Daniel Willingham|cat_026|Education|2009|5
+book_162|Why We Sleep|Matthew Walker|cat_027|Health|2017|10
+book_163|The China Study|T. Colin Campbell|cat_027|Health|2005|7
+book_164|How Not to Die|Michael Greger|cat_027|Health|2015|8
+book_165|The Body Keeps the Score|Bessel van der Kolk|cat_027|Health|2014|9
+book_166|The Checklist Manifesto|Atul Gawande|cat_027|Health|2009|6
+book_167|The Alchemist|Paulo Coelho|cat_028|Travel|1988|11
+book_168|In Patagonia|Bruce Chatwin|cat_028|Travel|1977|5
+book_169|A Walk in the Woods|Bill Bryson|cat_028|Travel|1998|8
+book_170|The Geography of Bliss|Eric Weiner|cat_028|Travel|2008|6
+book_171|Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel|Rolf Potts|cat_028|Travel|2002|5
+book_172|Salt, Fat, Acid, Heat|Samin Nosrat|cat_029|Cooking|2017|9
+book_173|The Joy of Cooking|Irma S. Rombauer|cat_029|Cooking|1931|7
+book_174|Mastering the Art of French Cooking|Julia Child|cat_029|Cooking|1961|6
+book_175|The Art of Fermentation|Sandor Katz|cat_029|Cooking|2012|4
+book_176|Kitchen Confidential|Anthony Bourdain|cat_029|Cooking|2000|8
+book_177|The God Delusion|Richard Dawkins|cat_030|Religion|2006|8
+book_178|The Power of Now|Eckhart Tolle|cat_030|Religion|1997|9
+book_179|Mere Christianity|C.S. Lewis|cat_030|Religion|1952|7
+book_180|Zealot: The Life and Times of Jesus of Nazareth|Reza Aslan|cat_030|Religion|2013|5
+book_181|The Varieties of Religious Experience|William James|cat_030|Religion|1902|4
+book_182|Outliers|Malcolm Gladwell|cat_002|Non-Fiction|2008|10
+book_183|The Tipping Point|Malcolm Gladwell|cat_002|Non-Fiction|2000|8
+book_184|Blink|Malcolm Gladwell|cat_002|Non-Fiction|2005|7
+book_185|In Cold Blood|Truman Capote|cat_002|Non-Fiction|1966|6
+book_186|The Sixth Extinction|Elizabeth Kolbert|cat_002|Non-Fiction|2014|7
+book_187|Thinking in Systems|Donella Meadows|cat_002|Non-Fiction|2008|5
+book_188|The Omnivore's Dilemma|Michael Pollan|cat_002|Non-Fiction|2006|8
+book_189|Guns, Germs, and Steel|Jared Diamond|cat_002|Non-Fiction|1997|9
+book_190|The Righteous Mind|Jonathan Haidt|cat_014|Psychology|2012|6
+book_191|The Happiness Hypothesis|Jonathan Haidt|cat_014|Psychology|2006|5
+book_192|Flow: The Psychology of Optimal Experience|Mihaly Csikszentmihalyi|cat_014|Psychology|1990|7
+book_193|Drive: The Surprising Truth About What Motivates Us|Daniel Pink|cat_016|Business|2009|7
+book_194|The E-Myth Revisited|Michael Gerber|cat_016|Business|1995|6
+book_195|Rework|Jason Fried|cat_016|Business|2010|8
+book_196|The Art of War for Executives|Donald Krause|cat_016|Business|1995|4
+book_197|Deep Work|Cal Newport|cat_015|Self-Help|2016|9
+book_198|The 4-Hour Workweek|Tim Ferriss|cat_015|Self-Help|2007|8
+book_199|Daring Greatly|Brene Brown|cat_015|Self-Help|2012|8
+book_200|Homo Deus: A Brief History of Tomorrow|Yuval Noah Harari|cat_002|Non-Fiction|2016|7
