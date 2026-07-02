@@ -179,6 +179,9 @@ dotnet run
 # 6. Test endpoints
 curl http://localhost:5000/health
 curl http://localhost:5000/api/books
+
+# 7. Unit Test
+dotnet test Tests/Library.Tests.fsproj
 ```
 
 ## 📚 Tài liệu

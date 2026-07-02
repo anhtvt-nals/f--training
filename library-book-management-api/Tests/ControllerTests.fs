@@ -14,10 +14,13 @@ let ``CreateBookRequest should hold book data`` () =
     let req =
         { title = "Clean Code"
           author = "Robert C. Martin"
-          genre = "Technology"
+          categoryId = "cat_tech001"
+          categoryName = "Technology"
           publishedYear = 2008
           totalCopies = 5 }
     Assert.Equal("Clean Code", req.title)
+    Assert.Equal("cat_tech001", req.categoryId)
+    Assert.Equal("Technology", req.categoryName)
     Assert.Equal(5, req.totalCopies)
 
 [<Fact>]
@@ -25,12 +28,15 @@ let ``UpdateBookRequest fields default to None`` () =
     let req =
         { title = Some "New Title"
           author = None
-          genre = None
+          categoryId = None
+          categoryName = None
           publishedYear = None
           totalCopies = None
           availableCopies = None }
     Assert.Equal(Some "New Title", req.title)
     Assert.Equal(None, req.author)
+    Assert.Equal(None, req.categoryId)
+    Assert.Equal(None, req.categoryName)
     Assert.Equal(None, req.availableCopies)
 
 [<Fact>]
@@ -49,7 +55,7 @@ let ``Option.defaultValue keeps original when None`` () =
 
 [<Fact>]
 let ``CreateCategoryRequest should hold category data`` () =
-    let req =
+    let req: CreateCategoryRequest =
         { name = "Fiction"
           description = "Imaginative works" }
     Assert.Equal("Fiction", req.name)
@@ -60,8 +66,8 @@ let ``UpdateCategoryRequest fields default to None`` () =
     let req =
         { name = Some "New Name"
           description = None }
-    Assert.Equal(Some "New Name", req.name)
-    Assert.Equal(None, req.description)
+    Assert.Equal("New Name", req.name.Value)
+    Assert.True(req.description.IsNone)
 
 // ============ Search Request Type ============
 

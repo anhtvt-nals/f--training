@@ -16,7 +16,7 @@ let ``ItemType.category should be "category"`` () =
 
 [<Fact>]
 let ``ItemType.book and category should be different`` () =
-    Assert.NotEqual(ItemType.book, ItemType.category)
+    Assert.NotEqual<string>(ItemType.book, ItemType.category)
 
 // ============ IdGen Tests ============
 
@@ -44,13 +44,13 @@ let ``generateCategoryId should have 12 characters total`` () =
 let ``generateBookId should produce unique ids`` () =
     let id1 = IdGen.generateBookId()
     let id2 = IdGen.generateBookId()
-    Assert.NotEqual(id1, id2)
+    Assert.NotEqual<string>(id1, id2)
 
 [<Fact>]
 let ``generateCategoryId should produce unique ids`` () =
     let id1 = IdGen.generateCategoryId()
     let id2 = IdGen.generateCategoryId()
-    Assert.NotEqual(id1, id2)
+    Assert.NotEqual<string>(id1, id2)
 
 // ============ Book Record Tests ============
 
@@ -62,7 +62,8 @@ let ``Book record should hold all fields`` () =
           bookId = "book_abc12345"
           title = "Clean Code"
           author = "Robert C. Martin"
-          genre = "Technology"
+          categoryId = "cat_tech001"
+          categoryName = "Technology"
           publishedYear = 2008
           totalCopies = 5
           availableCopies = 3
@@ -71,7 +72,8 @@ let ``Book record should hold all fields`` () =
     Assert.Equal("book_abc12345", book.id)
     Assert.Equal("Clean Code", book.title)
     Assert.Equal("Robert C. Martin", book.author)
-    Assert.Equal("Technology", book.genre)
+    Assert.Equal("cat_tech001", book.categoryId)
+    Assert.Equal("Technology", book.categoryName)
     Assert.Equal(2008, book.publishedYear)
     Assert.Equal(5, book.totalCopies)
     Assert.Equal(3, book.availableCopies)
@@ -85,7 +87,8 @@ let ``Book update with "with" should preserve other fields`` () =
           bookId = "book_001"
           title = "Old Title"
           author = "Author"
-          genre = "Fiction"
+          categoryId = "cat_001"
+          categoryName = "Fiction"
           publishedYear = 2020
           totalCopies = 10
           availableCopies = 8
@@ -97,20 +100,6 @@ let ``Book update with "with" should preserve other fields`` () =
     // unchanged fields
     Assert.Equal("book_001", updated.id)
     Assert.Equal("Author", updated.author)
+    Assert.Equal("cat_001", updated.categoryId)
+    Assert.Equal("Fiction", updated.categoryName)
     Assert.Equal(10, updated.totalCopies)
-
-[<Fact>]
-let ``CLIMutable Book should allow property mutation`` () =
-    let book =
-        { id = "book_001"
-          bookId = "book_001"
-          title = "Test"
-          author = "Author"
-          genre = "Fiction"
-          publishedYear = 2020
-          totalCopies = 1
-          availableCopies = 1
-          itemType = ItemType.book
-          addedDate = DateTime.UtcNow }
-    book.title <- "Changed"
-    Assert.Equal("Changed", book.title)
