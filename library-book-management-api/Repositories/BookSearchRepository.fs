@@ -19,6 +19,14 @@ type BookSearchRepository(config: SearchConfig) =
     let searchClient = SearchClient(Uri(config.Endpoint), config.IndexName, credential)
     let indexClient = SearchIndexClient(Uri(config.Endpoint), credential)
 
+    // Build full-text query targeting multiple fields (not OData filter)
+    member _.BuildSearchTextQuery(searchText: string) =
+        if String.IsNullOrWhiteSpace(searchText) then
+            "*"
+        else
+            let q = searchText.Trim().Replace("\"", "\\\"")
+            $"title:(\"{q}\") OR author:(\"{q}\") OR categoryName:(\"{q}\")"
+
     member _.EnsureIndexAsync() =
         task {
             let index = SearchIndex(config.IndexName)
@@ -48,12 +56,14 @@ type BookSearchRepository(config: SearchConfig) =
             return "Removed"
         } : System.Threading.Tasks.Task<string>
 
-    member _.SearchAsync(searchText: string, ?top: int) =
+    member this.SearchAsync(searchText: string, ?top: int) =
         task {
             let options = SearchOptions()
             options.Size <- defaultArg top 20
             options.IncludeTotalCount <- true
-            let! resp = searchClient.SearchAsync<Book>(searchText, options)
+            options.QueryType <- SearchQueryType.Full
+            let query = this.BuildSearchTextQuery(searchText)
+            let! resp = searchClient.SearchAsync<Book>(query, options)
             
             // Parse results to Book list
             let books = 
@@ -65,12 +75,14 @@ type BookSearchRepository(config: SearchConfig) =
         } : System.Threading.Tasks.Task<Book list>
 
     // Search with count result
-    member _.SearchWithCountAsync(searchText: string, ?top: int) =
+    member this.SearchWithCountAsync(searchText: string, ?top: int) =
         task {
             let options = SearchOptions()
             options.Size <- defaultArg top 20
             options.IncludeTotalCount <- true
-            let! resp = searchClient.SearchAsync<Book>(searchText, options)
+            options.QueryType <- SearchQueryType.Full
+            let query = this.BuildSearchTextQuery(searchText)
+            let! resp = searchClient.SearchAsync<Book>(query, options)
             
             // Parse results to Book list
             let books = 
@@ -118,13 +130,15 @@ type BookSearchRepository(config: SearchConfig) =
             let options = SearchOptions()
             options.Size <- defaultArg req.top 50
             options.IncludeTotalCount <- true
-            
+            options.QueryType <- SearchQueryType.Full
+
+            let query = this.BuildSearchTextQuery(req.query)
             // Build filter expression from model
             let filterQuery = this.BuildFilterQuery(req)
             if not (isNull filterQuery) then
                 options.Filter <- filterQuery
             
-            let! resp = searchClient.SearchAsync<Book>(req.query, options)
+            let! resp = searchClient.SearchAsync<Book>(query, options)
             let books = 
                 resp.Value.GetResults()
                 |> Seq.map (fun r -> r.Document)

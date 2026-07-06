@@ -71,10 +71,19 @@ let uploadAllBatchesParallel (searchClient: SearchClient) (batches: Book list li
         |> List.mapi (fun i batch -> 
             uploadBatchAsync searchClient (i + 1) batches.Length batch)
     
+    // Chunk operations to respect maxParallel limit
+    let chunks = chunkList maxParallel asyncOperations
+    
+    printfn "  Processing %d chunks with max %d parallel operations each" chunks.Length maxParallel
+    
     let results = 
-        asyncOperations
-        |> Async.Parallel
-        |> Async.RunSynchronously
+        chunks
+        |> List.collect (fun chunk ->
+            chunk
+            |> Async.Parallel
+            |> Async.RunSynchronously
+            |> Array.toList)
+        |> List.toArray
     
     let successCount = 
         results 
