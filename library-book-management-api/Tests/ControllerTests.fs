@@ -75,7 +75,11 @@ let ``UpdateCategoryRequest fields default to None`` () =
 let ``SearchRequest should hold query and top`` () =
     let req =
         { query = "clean code"
-          top = Some 10 }
+          top = Some 10
+          categoryId = None
+          minYear = None
+          maxYear = None
+          author = None }
     Assert.Equal("clean code", req.query)
     Assert.Equal(Some 10, req.top)
 
@@ -83,5 +87,9 @@ let ``SearchRequest should hold query and top`` () =
 let ``SearchRequest top defaults to None`` () =
     let req =
         { query = "test"
-          top = None }
+          top = None
+          categoryId = None
+          minYear = None
+          maxYear = None
+          author = None }
     Assert.Equal(None, req.top)

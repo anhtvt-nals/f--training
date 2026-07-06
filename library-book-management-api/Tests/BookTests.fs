@@ -56,7 +56,7 @@ let ``generateCategoryId should produce unique ids`` () =
 
 [<Fact>]
 let ``Book record should hold all fields`` () =
-    let now = DateTime.UtcNow
+    let now = DateTimeOffset.UtcNow
     let book =
         { id = "book_abc12345"
           bookId = "book_abc12345"
@@ -93,7 +93,7 @@ let ``Book update with "with" should preserve other fields`` () =
           totalCopies = 10
           availableCopies = 8
           itemType = ItemType.book
-          addedDate = DateTime.UtcNow }
+          addedDate = DateTimeOffset.UtcNow }
     let updated = { book with title = "New Title"; availableCopies = 5 }
     Assert.Equal("New Title", updated.title)
     Assert.Equal(5, updated.availableCopies)

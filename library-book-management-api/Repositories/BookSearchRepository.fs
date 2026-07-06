@@ -64,31 +64,73 @@ type BookSearchRepository(config: SearchConfig) =
             return books
         } : System.Threading.Tasks.Task<Book list>
 
-    // Advanced search with filters
-    member _.SearchWithFiltersAsync(searchText: string, ?categoryId: string, ?minYear: int, ?maxYear: int) =
+    // Search with count result
+    member _.SearchWithCountAsync(searchText: string, ?top: int) =
         task {
             let options = SearchOptions()
-            options.Size <- 50
+            options.Size <- defaultArg top 20
+            options.IncludeTotalCount <- true
+            let! resp = searchClient.SearchAsync<Book>(searchText, options)
+            
+            // Parse results to Book list
+            let books = 
+                resp.Value.GetResults()
+                |> Seq.map (fun r -> r.Document)
+                |> Seq.toList
+            
+            let totalCount = resp.Value.TotalCount |> Option.ofNullable |> Option.defaultValue 0L
+            
+            return (books, totalCount)
+        } : System.Threading.Tasks.Task<Book list * int64>
+
+    // Build filter query string
+    member _.BuildFilterQuery(?categoryId: string, ?minYear: int, ?maxYear: int, ?author: string) =
+        let filters = ResizeArray<string>()
+        
+        match categoryId with
+        | Some cid when not (String.IsNullOrWhiteSpace(cid)) -> 
+            filters.Add($"categoryId eq '{cid}'")
+        | _ -> ()
+        
+        match minYear with
+        | Some year when year > 0 -> 
+            filters.Add($"publishedYear ge {year}")
+        | _ -> ()
+        
+        match maxYear with
+        | Some year when year > 0 -> 
+            filters.Add($"publishedYear le {year}")
+        | _ -> ()
+        
+        match author with
+        | Some a when not (String.IsNullOrWhiteSpace(a)) -> 
+            filters.Add($"author eq '{a}'")
+        | _ -> ()
+        
+        if filters.Count > 0 then
+            String.Join(" and ", filters)
+        else
+            null
+
+    // Advanced search with filters and count
+    member this.SearchWithFiltersAsync(searchText: string, ?categoryId: string, ?minYear: int, ?maxYear: int, ?author: string, ?top: int) =
+        task {
+            let options = SearchOptions()
+            options.Size <- defaultArg top 50
+            options.IncludeTotalCount <- true
             
             // Build filter expression
-            let filters = ResizeArray<string>()
-            match categoryId with
-            | Some cid -> filters.Add($"categoryId eq '{cid}'")
-            | None -> ()
-            match minYear with
-            | Some year -> filters.Add($"publishedYear ge {year}")
-            | None -> ()
-            match maxYear with
-            | Some year -> filters.Add($"publishedYear le {year}")
-            | None -> ()
-            
-            if filters.Count > 0 then
-                options.Filter <- String.Join(" and ", filters)
+            let filterQuery = this.BuildFilterQuery(?categoryId = categoryId, ?minYear = minYear, ?maxYear = maxYear, ?author = author)
+            if not (isNull filterQuery) then
+                options.Filter <- filterQuery
             
             let! resp = searchClient.SearchAsync<Book>(searchText, options)
             let books = 
                 resp.Value.GetResults()
                 |> Seq.map (fun r -> r.Document)
                 |> Seq.toList
-            return books
-        } : System.Threading.Tasks.Task<Book list>
+            
+            let totalCount = resp.Value.TotalCount |> Option.ofNullable |> Option.defaultValue 0L
+            
+            return (books, totalCount)
+        } : System.Threading.Tasks.Task<Book list * int64>

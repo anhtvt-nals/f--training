@@ -39,7 +39,7 @@ let ``Book and Category use different itemType values`` () =
     let book =
         { id = "book_001"; bookId = "book_001"; title = "T"; author = "A"
           categoryId = "cat_001"; categoryName = "Tech"; publishedYear = 2020; totalCopies = 1
-          availableCopies = 1; itemType = ItemType.book; addedDate = DateTime.UtcNow }
+          availableCopies = 1; itemType = ItemType.book; addedDate = DateTimeOffset.UtcNow }
     let cat =
         { id = "cat_001"; categoryId = "cat_001"; name = "N"
           description = "D"; itemType = ItemType.category }

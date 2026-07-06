@@ -49,9 +49,7 @@ let webApp =
         POST >=> route "/api/search" >=> searchBooksHandler
         
         // Search (Cosmos DB - đơn giản)
-        POST >=> route "/api/search/cosmos" >=> searchCosmosHandler
-        GET >=> route "/api/books/search/title" >=> searchByTitleHandler
-        GET >=> route "/api/books/search/author" >=> searchByAuthorHandler
+        GET >=> route "/api/search/cosmos" >=> searchCosmosHandler  // Support GET with query params
         GET >=> routef "/api/books/category/%s" getBooksByCategoryHandler
 
         setStatusCode 404 >=> json {| error = "Not Found" |}
@@ -68,8 +66,6 @@ let main args =
     printfn ""
     printfn "Search (Azure):  POST /api/search"
     printfn "Search (Cosmos): POST /api/search/cosmos"
-    printfn "                 GET /api/books/search/title?q=..."
-    printfn "                 GET /api/books/search/author?q=..."
     printfn "                 GET /api/books/category/{categoryId}"
     printfn ""
     printfn "Health:      GET /health"

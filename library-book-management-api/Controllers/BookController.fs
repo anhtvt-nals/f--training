@@ -5,30 +5,7 @@ open Giraffe
 open Book
 open BookRepository
 open BookSearchRepository
-
-[<CLIMutable>]
-type CreateBookRequest =
-    { title: string
-      author: string
-      categoryId: string
-      categoryName: string
-      publishedYear: int
-      totalCopies: int }
-
-[<CLIMutable>]
-type UpdateBookRequest =
-    { title: string option
-      author: string option
-      categoryId: string option
-      categoryName: string option
-      publishedYear: int option
-      totalCopies: int option
-      availableCopies: int option }
-
-[<CLIMutable>]
-type SearchRequest =
-    { query: string
-      top: int option }
+open Book.Validation
 
 // GET /health
 let healthHandler: HttpHandler =
@@ -60,24 +37,30 @@ let createBookHandler: HttpHandler =
     fun next ctx ->
         task {
             let! req = ctx.BindJsonAsync<CreateBookRequest>()
-            let bookId = IdGen.generateBookId()
-            let book: Book =
-                { id = bookId
-                  bookId = bookId
-                  title = req.title
-                  author = req.author
-                  categoryId = req.categoryId
-                  categoryName = req.categoryName
-                  publishedYear = req.publishedYear
-                  totalCopies = req.totalCopies
-                  availableCopies = req.totalCopies
-                  itemType = ItemType.book
-                  addedDate = DateTime.UtcNow }
-            let repo = ctx.GetService<BookRepository>()
-            let! created = repo.CreateAsync(book)
-            let searchRepo = ctx.GetService<BookSearchRepository>()
-            let _ = searchRepo.IndexAsync(created).Result
-            return! (setStatusCode 201 >=> json created) next ctx
+            
+            // Validate request
+            match validateCreateBookRequest req with
+            | Invalid errors ->
+                return! (setStatusCode 400 >=> json {| error = "Validation failed"; details = errors |}) next ctx
+            | Valid validReq ->
+                let bookId = IdGen.generateBookId()
+                let book: Book =
+                    { id = bookId
+                      bookId = bookId
+                      title = validReq.title
+                      author = validReq.author
+                      categoryId = validReq.categoryId
+                      categoryName = validReq.categoryName
+                      publishedYear = validReq.publishedYear
+                      totalCopies = validReq.totalCopies
+                      availableCopies = validReq.totalCopies
+                      itemType = ItemType.book
+                      addedDate = DateTimeOffset.UtcNow }
+                let repo = ctx.GetService<BookRepository>()
+                let! created = repo.CreateAsync(book)
+                let searchRepo = ctx.GetService<BookSearchRepository>()
+                let _ = searchRepo.IndexAsync(created).Result
+                return! (setStatusCode 201 >=> json created) next ctx
         }
 
 // PUT /api/books/{id}
@@ -85,24 +68,30 @@ let updateBookHandler (bookId: string) : HttpHandler =
     fun next ctx ->
         task {
             let! req = ctx.BindJsonAsync<UpdateBookRequest>()
-            let repo = ctx.GetService<BookRepository>()
-            try
-                let! existing = repo.GetByIdAsync(bookId)
-                let updated: Book =
-                    { existing with
-                        title = req.title |> Option.defaultValue existing.title
-                        author = req.author |> Option.defaultValue existing.author
-                        categoryId = req.categoryId |> Option.defaultValue existing.categoryId
-                        categoryName = req.categoryName |> Option.defaultValue existing.categoryName
-                        publishedYear = req.publishedYear |> Option.defaultValue existing.publishedYear
-                        totalCopies = req.totalCopies |> Option.defaultValue existing.totalCopies
-                        availableCopies = req.availableCopies |> Option.defaultValue existing.availableCopies }
-                let! saved = repo.UpdateAsync(updated)
-                let searchRepo = ctx.GetService<BookSearchRepository>()
-                let _ = searchRepo.IndexAsync(saved).Result
-                return! json saved next ctx
-            with _ ->
-                return! (setStatusCode 404 >=> json {| error = "Book not found" |}) next ctx
+            
+            // Validate request
+            match validateUpdateBookRequest req with
+            | Invalid errors ->
+                return! (setStatusCode 400 >=> json {| error = "Validation failed"; details = errors |}) next ctx
+            | Valid validReq ->
+                let repo = ctx.GetService<BookRepository>()
+                try
+                    let! existing = repo.GetByIdAsync(bookId)
+                    let updated: Book =
+                        { existing with
+                            title = validReq.title |> Option.defaultValue existing.title
+                            author = validReq.author |> Option.defaultValue existing.author
+                            categoryId = validReq.categoryId |> Option.defaultValue existing.categoryId
+                            categoryName = validReq.categoryName |> Option.defaultValue existing.categoryName
+                            publishedYear = validReq.publishedYear |> Option.defaultValue existing.publishedYear
+                            totalCopies = validReq.totalCopies |> Option.defaultValue existing.totalCopies
+                            availableCopies = validReq.availableCopies |> Option.defaultValue existing.availableCopies }
+                    let! saved = repo.UpdateAsync(updated)
+                    let searchRepo = ctx.GetService<BookSearchRepository>()
+                    let _ = searchRepo.IndexAsync(saved).Result
+                    return! json saved next ctx
+                with _ ->
+                    return! (setStatusCode 404 >=> json {| error = "Book not found" |}) next ctx
         }
 
 // DELETE /api/books/{id}
@@ -126,39 +115,64 @@ let searchBooksHandler: HttpHandler =
     fun next ctx ->
         task {
             let! req = ctx.BindJsonAsync<SearchRequest>()
-            let searchRepo = ctx.GetService<BookSearchRepository>()
-            let! results = searchRepo.SearchAsync(req.query, defaultArg req.top 20)
-            return! json {| source = "Azure Search"; count = results.Length; results = results |} next ctx
+            
+            // Validate request
+            match validateSearchRequest req with
+            | Invalid errors ->
+                return! (setStatusCode 400 >=> json {| error = "Validation failed"; details = errors |}) next ctx
+            | Valid validReq ->
+                let searchRepo = ctx.GetService<BookSearchRepository>()
+                let! (results, totalCount) = searchRepo.SearchWithFiltersAsync(
+                    validReq.query, 
+                    ?categoryId = validReq.categoryId,
+                    ?minYear = validReq.minYear,
+                    ?maxYear = validReq.maxYear,
+                    ?author = validReq.author,
+                    ?top = validReq.top
+                )
+                let response: SearchResponse = 
+                    { source = "Azure Search"
+                      count = results.Length
+                      totalCount = totalCount
+                      results = results }
+                return! json response next ctx
         }
 
-// POST /api/search/cosmos (Cosmos DB search - đơn giản, filter-based)
+// POST/GET /api/search/cosmos (Cosmos DB search - đơn giản, filter-based)
 let searchCosmosHandler: HttpHandler =
     fun next ctx ->
         task {
-            let! req = ctx.BindJsonAsync<SearchRequest>()
             let repo = ctx.GetService<BookRepository>()
-            let! results = repo.SearchAsync(req.query)
+            
+            // Support both POST (JSON body) and GET (query params)
+            let! searchText, categoryId, author, minYear, maxYear =
+                task {
+                    if ctx.Request.Method = "POST" then
+                        let! req = ctx.BindJsonAsync<SearchRequest>()
+                        return 
+                            (if String.IsNullOrWhiteSpace(req.query) then None else Some req.query),
+                            req.categoryId,
+                            req.author,
+                            req.minYear,
+                            req.maxYear
+                    else
+                        // GET: read from query string
+                        let q = ctx.TryGetQueryStringValue("searchText") |> Option.orElse (ctx.TryGetQueryStringValue("q"))
+                        let cat = ctx.TryGetQueryStringValue("categoryId")
+                        let auth = ctx.TryGetQueryStringValue("author")
+                        let minY = ctx.TryGetQueryStringValue("minYear") |> Option.bind (fun s -> match Int32.TryParse(s) with true, v -> Some v | _ -> None)
+                        let maxY = ctx.TryGetQueryStringValue("maxYear") |> Option.bind (fun s -> match Int32.TryParse(s) with true, v -> Some v | _ -> None)
+                        return q, cat, auth, minY, maxY
+                }
+            
+            let! results = repo.SearchAsync(
+                ?searchText = searchText,
+                ?categoryId = categoryId,
+                ?author = author,
+                ?minYear = minYear,
+                ?maxYear = maxYear
+            )
             return! json {| source = "Cosmos DB"; count = results.Length; results = results |} next ctx
-        }
-
-// GET /api/books/search/title?q=clean
-let searchByTitleHandler: HttpHandler =
-    fun next ctx ->
-        task {
-            let query = ctx.GetQueryStringValue("q") |> Result.defaultValue ""
-            let repo = ctx.GetService<BookRepository>()
-            let! results = repo.SearchByTitleAsync(query)
-            return! json results next ctx
-        }
-
-// GET /api/books/search/author?q=martin
-let searchByAuthorHandler: HttpHandler =
-    fun next ctx ->
-        task {
-            let query = ctx.GetQueryStringValue("q") |> Result.defaultValue ""
-            let repo = ctx.GetService<BookRepository>()
-            let! results = repo.SearchByAuthorAsync(query)
-            return! json results next ctx
         }
 
 // GET /api/books/category/{categoryId}
@@ -166,6 +180,6 @@ let getBooksByCategoryHandler (categoryId: string) : HttpHandler =
     fun next ctx ->
         task {
             let repo = ctx.GetService<BookRepository>()
-            let! results = repo.SearchByCategoryAsync(categoryId)
+            let! results = repo.SearchAsync(categoryId = categoryId)
             return! json results next ctx
         }

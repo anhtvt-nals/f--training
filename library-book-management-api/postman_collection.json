@@ -1,0 +1,432 @@
+{
+	"info": {
+		"_postman_id": "library-book-management-api-2026",
+		"name": "Library Book Management API",
+		"description": "Complete API collection for Library Book Management System with Cosmos DB and Azure Search",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "library-api"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5000",
+			"type": "string"
+		},
+		{
+			"key": "bookId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "categoryId",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Health",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["health"]
+						},
+						"description": "Check API health status"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Books",
+			"item": [
+				{
+					"name": "Get All Books",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/books",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books"]
+						},
+						"description": "Retrieve all books from Cosmos DB"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Book by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/books/{{bookId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "{{bookId}}"]
+						},
+						"description": "Get a specific book by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Book",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('bookId', response.id);",
+									"    pm.environment.set('lastCreatedBookId', response.id);",
+									"    console.log('Book created with ID:', response.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Clean Code: A Handbook of Agile Software Craftsmanship\",\n    \"author\": \"Robert C. Martin\",\n    \"categoryId\": \"cat_tech001\",\n    \"categoryName\": \"Technology\",\n    \"publishedYear\": 2008,\n    \"totalCopies\": 10\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/books",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books"]
+						},
+						"description": "Create a new book (validates all fields)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Book - Validation Error",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"\",\n    \"author\": \"Robert C. Martin\",\n    \"categoryId\": \"cat_tech001\",\n    \"categoryName\": \"Technology\",\n    \"publishedYear\": 3000,\n    \"totalCopies\": -5\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/books",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books"]
+						},
+						"description": "Example of validation errors"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Book",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Clean Code: Updated Edition\",\n    \"availableCopies\": 8\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/books/{{bookId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "{{bookId}}"]
+						},
+						"description": "Update book fields (partial update supported)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Book",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/books/{{bookId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "{{bookId}}"]
+						},
+						"description": "Delete a book by ID"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Search",
+			"item": [
+				{
+					"name": "Azure Search - Basic",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"query\": \"clean code\",\n    \"top\": 20\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/search",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "search"]
+						},
+						"description": "Search books using Azure Search with count"
+					},
+					"response": []
+				},
+				{
+					"name": "Azure Search - With Filters",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"query\": \"programming\",\n    \"top\": 50,\n    \"categoryId\": \"cat_tech001\",\n    \"minYear\": 2000,\n    \"maxYear\": 2020,\n    \"author\": \"Robert C. Martin\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/search",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "search"]
+						},
+						"description": "Advanced search with filters, year range, and author"
+					},
+					"response": []
+				},
+				{
+					"name": "Azure Search - By Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"query\": \"*\",\n    \"top\": 100,\n    \"categoryId\": \"cat_tech001\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/search",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "search"]
+						},
+						"description": "Search all books in a specific category"
+					},
+					"response": []
+				},
+				{
+					"name": "Cosmos DB Search",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"query\": \"clean\",\n    \"top\": 10\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/search/cosmos",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "search", "cosmos"]
+						},
+						"description": "Simple search using Cosmos DB queries"
+					},
+					"response": []
+				},
+				{
+					"name": "Search by Title",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/books/search/title?q=clean",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "search", "title"],
+							"query": [
+								{
+									"key": "q",
+									"value": "clean"
+								}
+							]
+						},
+						"description": "Search books by title using query parameter"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "Get All Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/categories",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "categories"]
+						},
+						"description": "Retrieve all categories"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Category by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/categories/{{categoryId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "categories", "{{categoryId}}"]
+						},
+						"description": "Get a specific category by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('categoryId', response.id);",
+									"    console.log('Category created with ID:', response.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Technology\",\n    \"description\": \"Books about technology, programming, and software development\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/categories",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "categories"]
+						},
+						"description": "Create a new category"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Category",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Technology & Programming\",\n    \"description\": \"Updated description for technology category\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/categories/{{categoryId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "categories", "{{categoryId}}"]
+						},
+						"description": "Update category information"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Category",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/categories/{{categoryId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "categories", "{{categoryId}}"]
+						},
+						"description": "Delete a category by ID"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Batch Operations",
+			"item": [
+				{
+					"name": "Bulk Create Books",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"title\": \"The Pragmatic Programmer\",\n        \"author\": \"Andrew Hunt\",\n        \"categoryId\": \"cat_tech001\",\n        \"categoryName\": \"Technology\",\n        \"publishedYear\": 1999,\n        \"totalCopies\": 5\n    },\n    {\n        \"title\": \"Design Patterns\",\n        \"author\": \"Gang of Four\",\n        \"categoryId\": \"cat_tech001\",\n        \"categoryName\": \"Technology\",\n        \"publishedYear\": 1994,\n        \"totalCopies\": 7\n    },\n    {\n        \"title\": \"Refactoring\",\n        \"author\": \"Martin Fowler\",\n        \"categoryId\": \"cat_tech001\",\n        \"categoryName\": \"Technology\",\n        \"publishedYear\": 1999,\n        \"totalCopies\": 8\n    }\n]"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/books/bulk",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "bulk"]
+						},
+						"description": "Create multiple books at once"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

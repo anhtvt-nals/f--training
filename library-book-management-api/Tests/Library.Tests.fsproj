@@ -7,6 +7,8 @@
 
   <ItemGroup>
     <Compile Include="BookTests.fs" />
+    <Compile Include="BookModelsValidationTests.fs" />
+    <Compile Include="BookRepositoryIntegrationTests.fs" />
     <Compile Include="CategoryTests.fs" />
     <Compile Include="ControllerTests.fs" />
   </ItemGroup>

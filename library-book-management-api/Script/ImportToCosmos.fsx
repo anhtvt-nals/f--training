@@ -105,7 +105,7 @@ for line in bookLines do
           totalCopies = copies
           availableCopies = copies
           itemType = ItemType.book
-          addedDate = DateTime.UtcNow }
+          addedDate = DateTimeOffset.UtcNow }
     let pk = PartitionKey(ItemType.book)
     container.CreateItemAsync(book, pk).GetAwaiter().GetResult() |> ignore
     printfn "  + Book: %s (%s)" title bookId

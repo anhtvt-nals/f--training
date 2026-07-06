@@ -67,50 +67,59 @@ type BookRepository(config: CosmosConfig) as this =
         }
 
     // ============ SEARCH với Cosmos DB ============
-    
-    // Search by title (LIKE query)
-    member _.SearchByTitleAsync(searchText: string) =
+    member _.SearchAsync(?searchText: string, ?title: string, ?author: string, ?categoryId: string, ?minYear: int, ?maxYear: int) =
         task {
-            let query = 
-                QueryDefinition("SELECT * FROM c WHERE c.itemType = @type AND CONTAINS(LOWER(c.title), LOWER(@searchText))")
-                    .WithParameter("@type", ItemType.book)
-                    .WithParameter("@searchText", searchText)
-            return! this.QueryCosmosAsync<Book> query
-        }
-
-    // Search by author
-    member _.SearchByAuthorAsync(searchText: string) =
-        task {
-            let query = 
-                QueryDefinition("SELECT * FROM c WHERE c.itemType = @type AND CONTAINS(LOWER(c.author), LOWER(@searchText))")
-                    .WithParameter("@type", ItemType.book)
-                    .WithParameter("@searchText", searchText)
-            return! this.QueryCosmosAsync<Book> query
-        }
-
-    // Search by category
-    member _.SearchByCategoryAsync(categoryId: string) =
-        task {
-            let query = 
-                QueryDefinition("SELECT * FROM c WHERE c.itemType = @type AND c.categoryId = @categoryId")
-                    .WithParameter("@type", ItemType.book)
-                    .WithParameter("@categoryId", categoryId)
-            return! this.QueryCosmosAsync<Book> query
-        }
-
-    // General search (title OR author OR category)
-    member _.SearchAsync(searchText: string) =
-        task {
-            let query = 
-                QueryDefinition("""SELECT * FROM c 
-                   WHERE c.itemType = @type 
-                   AND (CONTAINS(LOWER(c.title), LOWER(@searchText)) 
-                        OR CONTAINS(LOWER(c.author), LOWER(@searchText))
-                        OR CONTAINS(LOWER(c.categoryName), LOWER(@searchText)))
-                   ORDER BY c.addedDate DESC""")
-                    .WithParameter("@type", ItemType.book)
-                    .WithParameter("@searchText", searchText)
-            return! this.QueryCosmosAsync<Book> query
+            let conditions = ResizeArray<string>()
+            conditions.Add("c.itemType = @type")
+            
+            let parameters = ResizeArray<struct(string * obj)>()
+            parameters.Add(struct("@type", ItemType.book :> obj))
+            
+            // Build WHERE conditions
+            match searchText with
+            | Some text when not (String.IsNullOrWhiteSpace(text)) ->
+                conditions.Add("(CONTAINS(LOWER(c.title), LOWER(@searchText)) OR CONTAINS(LOWER(c.author), LOWER(@searchText)) OR CONTAINS(LOWER(c.categoryName), LOWER(@searchText)))")
+                parameters.Add(struct("@searchText", text :> obj))
+            | _ -> ()
+            
+            match title with
+            | Some t when not (String.IsNullOrWhiteSpace(t)) ->
+                conditions.Add("CONTAINS(LOWER(c.title), LOWER(@title))")
+                parameters.Add(struct("@title", t :> obj))
+            | _ -> ()
+            
+            match author with
+            | Some a when not (String.IsNullOrWhiteSpace(a)) ->
+                conditions.Add("CONTAINS(LOWER(c.author), LOWER(@author))")
+                parameters.Add(struct("@author", a :> obj))
+            | _ -> ()
+            
+            match categoryId with
+            | Some cid ->
+                conditions.Add("c.categoryId = @categoryId")
+                parameters.Add(struct("@categoryId", cid :> obj))
+            | _ -> ()
+            
+            match minYear with
+            | Some y ->
+                conditions.Add("c.publishedYear >= @minYear")
+                parameters.Add(struct("@minYear", y :> obj))
+            | _ -> ()
+            
+            match maxYear with
+            | Some y ->
+                conditions.Add("c.publishedYear <= @maxYear")
+                parameters.Add(struct("@maxYear", y :> obj))
+            | _ -> ()
+            
+            let whereClause = String.Join(" AND ", conditions)
+            let sql = sprintf "SELECT * FROM c WHERE %s ORDER BY c.addedDate DESC" whereClause
+            
+            let mutable queryDef = QueryDefinition(sql)
+            for struct(name, value) in parameters do
+                queryDef <- queryDef.WithParameter(name, value)
+            
+            return! this.QueryCosmosAsync<Book> queryDef
         }
 
     member _.Client = client
