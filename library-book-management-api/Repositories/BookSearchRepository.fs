@@ -83,26 +83,26 @@ type BookSearchRepository(config: SearchConfig) =
             return (books, totalCount)
         } : System.Threading.Tasks.Task<Book list * int64>
 
-    // Build filter query string
-    member _.BuildFilterQuery(?categoryId: string, ?minYear: int, ?maxYear: int, ?author: string) =
+    // Build filter query string from SearchRequest model
+    member _.BuildFilterQuery(req: SearchRequest) =
         let filters = ResizeArray<string>()
         
-        match categoryId with
+        match req.categoryId with
         | Some cid when not (String.IsNullOrWhiteSpace(cid)) -> 
             filters.Add($"categoryId eq '{cid}'")
         | _ -> ()
         
-        match minYear with
+        match req.minYear with
         | Some year when year > 0 -> 
             filters.Add($"publishedYear ge {year}")
         | _ -> ()
         
-        match maxYear with
+        match req.maxYear with
         | Some year when year > 0 -> 
             filters.Add($"publishedYear le {year}")
         | _ -> ()
         
-        match author with
+        match req.author with
         | Some a when not (String.IsNullOrWhiteSpace(a)) -> 
             filters.Add($"author eq '{a}'")
         | _ -> ()
@@ -112,19 +112,19 @@ type BookSearchRepository(config: SearchConfig) =
         else
             null
 
-    // Advanced search with filters and count
-    member this.SearchWithFiltersAsync(searchText: string, ?categoryId: string, ?minYear: int, ?maxYear: int, ?author: string, ?top: int) =
+    // Advanced search with filters and count - using SearchRequest model
+    member this.SearchWithFiltersAsync(req: SearchRequest) =
         task {
             let options = SearchOptions()
-            options.Size <- defaultArg top 50
+            options.Size <- defaultArg req.top 50
             options.IncludeTotalCount <- true
             
-            // Build filter expression
-            let filterQuery = this.BuildFilterQuery(?categoryId = categoryId, ?minYear = minYear, ?maxYear = maxYear, ?author = author)
+            // Build filter expression from model
+            let filterQuery = this.BuildFilterQuery(req)
             if not (isNull filterQuery) then
                 options.Filter <- filterQuery
             
-            let! resp = searchClient.SearchAsync<Book>(searchText, options)
+            let! resp = searchClient.SearchAsync<Book>(req.query, options)
             let books = 
                 resp.Value.GetResults()
                 |> Seq.map (fun r -> r.Document)

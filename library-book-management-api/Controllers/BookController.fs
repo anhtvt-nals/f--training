@@ -110,26 +110,17 @@ let deleteBookHandler (bookId: string) : HttpHandler =
 
 // ============ SEARCH ENDPOINTS ============
 
-// POST /api/search (Azure Search - phức tạp, nhanh, full-text search)
-let searchBooksHandler: HttpHandler =
+// Implementation: Azure Search với validation
+let searchBooksHandler (req: SearchRequest) : HttpHandler =
     fun next ctx ->
         task {
-            let! req = ctx.BindJsonAsync<SearchRequest>()
-            
             // Validate request
             match validateSearchRequest req with
             | Invalid errors ->
                 return! (setStatusCode 400 >=> json {| error = "Validation failed"; details = errors |}) next ctx
             | Valid validReq ->
                 let searchRepo = ctx.GetService<BookSearchRepository>()
-                let! (results, totalCount) = searchRepo.SearchWithFiltersAsync(
-                    validReq.query, 
-                    ?categoryId = validReq.categoryId,
-                    ?minYear = validReq.minYear,
-                    ?maxYear = validReq.maxYear,
-                    ?author = validReq.author,
-                    ?top = validReq.top
-                )
+                let! (results, totalCount) = searchRepo.SearchWithFiltersAsync(validReq)
                 let response: SearchResponse = 
                     { source = "Azure Search"
                       count = results.Length
@@ -137,6 +128,7 @@ let searchBooksHandler: HttpHandler =
                       results = results }
                 return! json response next ctx
         }
+
 
 // POST/GET /api/search/cosmos (Cosmos DB search - đơn giản, filter-based)
 let searchCosmosHandler: HttpHandler =

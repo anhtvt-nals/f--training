@@ -16,6 +16,7 @@ open BookSearchRepository
 open BookController
 open CategoryRepository
 open CategoryController
+open Microsoft.AspNetCore.Http
 
 let requireEnv name =
     match System.Environment.GetEnvironmentVariable(name) with
@@ -26,6 +27,13 @@ let defaultEnv name fallback =
     match System.Environment.GetEnvironmentVariable(name) with
     | null | "" -> fallback
     | v -> v
+
+let bindVModel<'T> (handler: 'T -> HttpHandler) : HttpHandler =
+    fun (next: HttpFunc) (ctx: HttpContext) ->
+        task {
+            let! model = ctx.BindModelAsync<'T>()
+            return! handler model next ctx
+        }
 
 let webApp =
     choose [
@@ -45,8 +53,11 @@ let webApp =
         PUT >=> routef "/api/categories/%s" updateCategoryHandler
         DELETE >=> routef "/api/categories/%s" deleteCategoryHandler
 
-        // Search (Azure Search - phức tạp)
-        POST >=> route "/api/search" >=> searchBooksHandler
+        // Search (Azure Search - hỗ trợ cả GET với query params và POST với JSON body)
+        route "/api/search" >=> choose [
+            GET >=> bindVModel<SearchRequest> searchBooksHandler     // GET /api/search?query=fiction&categoryId=cat_123
+            POST >=> bindVModel<SearchRequest> searchBooksHandler    // POST /api/search (JSON body)
+        ]
         
         // Search (Cosmos DB - đơn giản)
         GET >=> route "/api/search/cosmos" >=> searchCosmosHandler  // Support GET with query params
@@ -64,8 +75,10 @@ let main args =
     printfn "Books:       GET/POST /api/books, GET/PUT/DELETE /api/books/{id}"
     printfn "Categories:  GET/POST /api/categories, GET/PUT/DELETE /api/categories/{id}"
     printfn ""
-    printfn "Search (Azure):  POST /api/search"
-    printfn "Search (Cosmos): POST /api/search/cosmos"
+    printfn "Search (Azure):  GET/POST /api/search"
+    printfn "                 - GET with query params: ?query=text&categoryId=id&top=10"
+    printfn "                 - POST with JSON body: {query, categoryId, top, ...}"
+    printfn "Search (Cosmos): GET /api/search/cosmos"
     printfn "                 GET /api/books/category/{categoryId}"
     printfn ""
     printfn "Health:      GET /health"
