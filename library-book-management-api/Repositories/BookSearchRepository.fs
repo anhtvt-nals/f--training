@@ -20,13 +20,6 @@ type BookSearchRepository(config: SearchConfig) =
     let indexClient = SearchIndexClient(Uri(config.Endpoint), credential)
 
     // Build full-text query targeting multiple fields (not OData filter)
-    member _.BuildSearchTextQuery(searchText: string) =
-        if String.IsNullOrWhiteSpace(searchText) then
-            "*"
-        else
-            let q = searchText.Trim().Replace("\"", "\\\"")
-            $"title:(\"{q}\") OR author:(\"{q}\") OR categoryName:(\"{q}\")"
-
     member _.EnsureIndexAsync() =
         task {
             let index = SearchIndex(config.IndexName)
@@ -95,6 +88,13 @@ type BookSearchRepository(config: SearchConfig) =
             return (books, totalCount)
         } : System.Threading.Tasks.Task<Book list * int64>
 
+    // Build search query for full-text search across multiple fields
+    member _.BuildSearchTextQuery(searchText: string) =
+        if String.IsNullOrWhiteSpace(searchText) then
+            "*"
+        else
+            searchText
+
     // Build filter query string from SearchRequest model
     member _.BuildFilterQuery(req: SearchRequest) =
         let filters = ResizeArray<string>()
@@ -124,7 +124,41 @@ type BookSearchRepository(config: SearchConfig) =
         else
             null
 
-    // Advanced search with filters and count - using SearchRequest model
+    // Build filter query with search.ismatch for full-text search
+    member _.BuildFilterQueryWithIsMatch(req: SearchRequest) =
+        let filters = ResizeArray<string>()
+        
+        // Add search.ismatch for full-text search on title and author
+        if not (String.IsNullOrWhiteSpace(req.query)) then
+            let searchFields = "title,author,categoryName"
+            filters.Add($"search.ismatch('{req.query}', '{searchFields}')")
+        
+        match req.categoryId with
+        | Some cid when not (String.IsNullOrWhiteSpace(cid)) -> 
+            filters.Add($"categoryId eq '{cid}'")
+        | _ -> ()
+        
+        match req.minYear with
+        | Some year when year > 0 -> 
+            filters.Add($"publishedYear ge {year}")
+        | _ -> ()
+        
+        match req.maxYear with
+        | Some year when year > 0 -> 
+            filters.Add($"publishedYear le {year}")
+        | _ -> ()
+        
+        match req.author with
+        | Some a when not (String.IsNullOrWhiteSpace(a)) -> 
+            filters.Add($"author eq '{a}'")
+        | _ -> ()
+        
+        if filters.Count > 0 then
+            String.Join(" and ", filters)
+        else
+            null
+
+    // Advanced search with filters and count - using SearchRequest model with search.ismatch
     member this.SearchWithFiltersAsync(req: SearchRequest) =
         task {
             let options = SearchOptions()
@@ -132,13 +166,13 @@ type BookSearchRepository(config: SearchConfig) =
             options.IncludeTotalCount <- true
             options.QueryType <- SearchQueryType.Full
 
-            let query = this.BuildSearchTextQuery(req.query)
-            // Build filter expression from model
-            let filterQuery = this.BuildFilterQuery(req)
+            // Build filter expression with search.ismatch for full-text search
+            let filterQuery = this.BuildFilterQueryWithIsMatch(req)
             if not (isNull filterQuery) then
                 options.Filter <- filterQuery
             
-            let! resp = searchClient.SearchAsync<Book>(query, options)
+            // Use "*" as the search query since we're using search.ismatch in filter
+            let! resp = searchClient.SearchAsync<Book>("*", options)
             let books = 
                 resp.Value.GetResults()
                 |> Seq.map (fun r -> r.Document)
